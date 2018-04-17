@@ -42,6 +42,10 @@ def main():
 
     src_in_line = src_in_f.readline().strip()
     tgt_in_line = tgt_in_f.readline().strip()
+
+    src_counter = 0
+    tgt_counter = 0
+
     while src_in_line and tgt_in_line:
         src_in_line_preped = run_all(src_in_line)
         tgt_in_line_preped = run_all(tgt_in_line)
@@ -53,11 +57,17 @@ def main():
             # write
             src_out_f.write(src_in_line_preped)
             src_out_f.write('\n')
+            src_counter += 1
+
             tgt_out_f.write(tgt_in_line_preped)
             tgt_out_f.write('\n')
+            tgt_counter += 1
 
         src_in_line = src_in_f.readline().strip()
         tgt_in_line = tgt_in_f.readline().strip()
+
+    print('%s lines for source data' % src_counter)
+    print('%s lines for target data' % tgt_counter)
 
 
 if __name__ == '__main__':
