@@ -17,7 +17,7 @@ def tokenize(sent):
     return ' '.join(nltk.word_tokenize(sent))
 
 
-def is_too_long(src_sent, tgt_sent, n=10):
+def is_too_long(src_sent, tgt_sent, n=50):
     return len(src_sent.split()) >= n or len(tgt_sent.split()) >= n
 
 
