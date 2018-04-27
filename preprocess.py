@@ -17,7 +17,7 @@ def tokenize(sent):
     return ' '.join(nltk.word_tokenize(sent))
 
 
-def is_too_long(src_sent, tgt_sent, n=50):
+def is_too_long(src_sent, tgt_sent, n=20):
     return len(src_sent.split()) >= n or len(tgt_sent.split()) >= n
 
 
@@ -25,6 +25,10 @@ def is_ratio_unbalance(src_sent, tgt_sent, ratio=1.5):
     src_len = len(src_sent.split())
     tgt_len = len(tgt_sent.split())
     return (src_len / tgt_len) > ratio
+
+
+def if_too_short(src_sent, tgt_sent, n=3):
+    return len(src_sent.split()) <= n or len(tgt_sent.split()) <= n
 
 
 def run_all(sent):
