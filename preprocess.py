@@ -37,6 +37,13 @@ def run_all(sent):
     return sent
 
 
+def is_starts_with(src_sent, tgt_sent, tokens=['<']):
+    for token in tokens:
+        if src_sent.startswith(token) or tgt_sent.startswith(token):
+            return True
+    return False
+
+
 def main():
     args = get_args()
     src_in_f = open(args.src_file_path, 'r')
