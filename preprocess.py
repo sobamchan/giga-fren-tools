@@ -1,3 +1,5 @@
+import re
+import unicodedata
 import argparse
 import nltk
 
@@ -7,6 +9,21 @@ def get_args():
     parser.add_argument('--src-file-path', type=str)
     parser.add_argument('--tgt-file-path', type=str)
     return parser.parse_args()
+
+
+def unicode_to_ascii(s):
+    return ''.join(
+            c for c in unicodedata.normalize('NFD', s)
+            if unicodedata.category(c) != 'Mn'
+            )
+
+
+def normalize_string(s):
+    s = unicode_to_ascii(s.lower().strip())
+    s = re.sub(r"([,.!?])", r" \1 ", s)
+    s = re.sub(r"[^a-zA-Z,.!?]+", r" ", s)
+    s = re.sub(r"\s+", r" ", s).strip()
+    return s
 
 
 def lower(sent):
@@ -27,7 +44,7 @@ def is_ratio_unbalance(src_sent, tgt_sent, ratio=1.5):
     return (src_len / tgt_len) > ratio
 
 
-def if_too_short(src_sent, tgt_sent, n=3):
+def is_too_short(src_sent, tgt_sent, n=3):
     return len(src_sent.split()) <= n or len(tgt_sent.split()) <= n
 
 
@@ -62,7 +79,9 @@ def main():
         tgt_in_line_preped = run_all(tgt_in_line)
 
         if (is_too_long(src_in_line_preped, tgt_in_line_preped) or
-           is_ratio_unbalance(src_in_line_preped, tgt_in_line_preped)):
+           is_ratio_unbalance(src_in_line_preped, tgt_in_line_preped) or
+           is_too_short(src_in_line_preped, tgt_in_line_preped) or
+           is_starts_with(src_in_line_preped, tgt_in_line_preped)):
             pass
         else:
             # write
