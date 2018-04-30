@@ -8,6 +8,8 @@ def get_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--src-file-path', type=str)
     parser.add_argument('--tgt-file-path', type=str)
+    parser.add_argument('--max-len', type=int, default=30)
+    parser.add_argument('--min-len', type=int, default=3)
     return parser.parse_args()
 
 
@@ -39,8 +41,8 @@ def is_too_long(src_sent, tgt_sent, n=20):
 
 
 def is_ratio_unbalance(src_sent, tgt_sent, ratio=1.5):
-    src_len = len(src_sent.split())
-    tgt_len = len(tgt_sent.split())
+    src_len = max(len(src_sent.split()), 1e-10)
+    tgt_len = max(len(tgt_sent.split()), 1e-10)
     return (src_len / tgt_len) > ratio
 
 
@@ -50,7 +52,9 @@ def is_too_short(src_sent, tgt_sent, n=3):
 
 def run_all(sent):
     sent = tokenize(sent)
+    return sent
     sent = lower(sent)
+    sent = normalize_string(sent)  # remove if Japanese
     return sent
 
 
@@ -74,13 +78,17 @@ def main():
     src_counter = 0
     tgt_counter = 0
 
-    while src_in_line and tgt_in_line:
+    while src_in_line or tgt_in_line:
         src_in_line_preped = run_all(src_in_line)
         tgt_in_line_preped = run_all(tgt_in_line)
 
-        if (is_too_long(src_in_line_preped, tgt_in_line_preped) or
+        if (is_too_long(src_in_line_preped,
+                        tgt_in_line_preped,
+                        args.max_len) or
            is_ratio_unbalance(src_in_line_preped, tgt_in_line_preped) or
-           is_too_short(src_in_line_preped, tgt_in_line_preped) or
+           is_too_short(src_in_line_preped,
+                        tgt_in_line_preped,
+                        args.min_len) or
            is_starts_with(src_in_line_preped, tgt_in_line_preped)):
             pass
         else:
@@ -95,6 +103,8 @@ def main():
 
         src_in_line = src_in_f.readline().strip()
         tgt_in_line = tgt_in_f.readline().strip()
+    print(src_in_line)
+    print(tgt_in_line)
 
     print('%s lines for source data' % src_counter)
     print('%s lines for target data' % tgt_counter)
